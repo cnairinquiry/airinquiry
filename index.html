@@ -1,0 +1,870 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<title>Air Inquiry</title>
+		<link rel="stylesheet" type="text/css" href="static/ring/main.css" />
+		<link rel="stylesheet" type="text/css" href="static/css/page.css" />
+		<script type="text/javascript" src="static/js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="static/js/jquery-rotate.js"></script>
+		<script type="text/javascript" src="static/js/jquery-cookie.js"></script>
+		<script type="text/javascript" src="static/js/jquery-json-2.4.min.js"></script>
+		<script type="text/javascript" src="static/js/jquery-ui-1.10.4.custom.min.js"></script>
+		<script type="text/javascript" src="static/js/jquery-textshadow.js"></script>
+		<script type="text/javascript" src="static/ring/main.js"></script>
+		<script type="text/javascript">
+			var cities;
+			var candDur = 300; // Duration of fade in/out effect of candidate list.
+			var battDur = 500; // Duration of "batteries".
+			var lightboxDur = 300; // Duration of lightbox.
+			var windDur = 1000; // Duration of wind direction.
+			
+			var eva7 = new Array(0, 50, 100, 150, 200, 300, 400, 500);
+			
+			var pm25eva = new Array(0, 35, 75, 115, 150, 250, 350, 500);
+			var pm10eva = new Array(0, 50, 150, 250, 350, 420, 500, 600);
+			var so2eva = new Array(0, 50, 150, 475, 800, 1600, 2100, 2620);
+			var no2eva = new Array(0, 40, 80, 180, 280, 565, 750, 940);
+			var coeva = new Array(0, 2, 4, 14, 24, 36, 48, 60);
+			var o3eva = new Array(0, 100, 160, 215, 265, 800, 1000, 1200);
+			
+			function IAQI (v, pleva)
+			{
+				for (var i = 1; i <= 7; i++)
+				{
+					if (i == 7 || v <= pleva[i])
+					{
+						return Math.ceil((eva7[i] - eva7[i - 1]) * (v - pleva[i - 1]) / (pleva[i] - pleva[i - 1])) + eva7[i - 1];
+					}
+				}
+			}
+			function evaColor (AQI)
+			{
+				if (AQI <= 50) return '#00e400';
+				else if (AQI <= 100) return '#fcf302';//'#ffff00';
+				else if (AQI <= 150) return '#ff7e00';
+				else if (AQI <= 200) return '#ff0000';
+				else if (AQI <= 300) return '#99004c';
+				else return '#7e0023';
+			}
+			function AQI2Deg (AQI)
+			{
+				if (AQI >= 500) AQI = 500;
+				if (AQI <= 50) return AQI / 50 * 60;
+				else if (AQI <= 100) return 60 + (AQI - 50) / 50 * 60;
+				else if (AQI <= 150) return 120 + (AQI - 100) / 50 * 60;
+				else if (AQI <= 200) return 180 + (AQI - 150) / 50 * 60;
+				else if (AQI <= 300) return 240 + (AQI - 200) / 100 * 60;
+				else return 300 + (AQI - 300) / 200 * 60;
+			}
+			function AQI2Percent (AQI)
+			{
+				if (AQI >= 500) AQI = 500;
+				var per;
+				if (AQI <= 50) per = AQI / 50 * 16;
+				else if (AQI <= 100) per = 16 + (AQI - 50) / 50 * 17;
+				else if (AQI <= 150) per = 33 + (AQI - 100) / 50 * 17;
+				else if (AQI <= 200) per = 50 + (AQI - 150) / 50 * 17;
+				else if (AQI <= 300) per = 67 + (AQI - 200) / 100 * 16;
+				else per = 83 + (AQI - 300) / 200 * 17;
+				return per + '%';
+			}
+			function setMainAQIScale (pm25, pm10, so2, no2, co, o3)
+			{
+				var ipm25 = IAQI(pm25, pm25eva), ipm10 = IAQI(pm10, pm10eva), iso2 = IAQI(so2, so2eva), ino2 = IAQI(no2, no2eva), ico = IAQI(co, coeva), io3 = IAQI(o3, o3eva);
+				
+				var aqi = 0;
+				
+				if (pm25 != '-' && !isNaN(pm25))
+				{
+					ringSet('#rPm25', AQI2Deg(ipm25));
+					$('#rnPm25').text(Math.floor(pm25));
+					$('#rnPm25').css('color', evaColor(ipm25));
+					if (ipm25 > aqi) aqi = ipm25;
+				}
+				else
+				{
+					ringSet('#rPm25', 0);
+					$('#rnPm25').text('--');
+					$('#rnPm25').css('color', '#cccccc');
+				}
+				if (pm10 != '-' && !isNaN(pm10))
+				{
+					ringSet('#rPm10', AQI2Deg(ipm10));
+					$('#rnPm10').text(Math.floor(pm10));
+					$('#rnPm10').css('color', evaColor(ipm10));
+					if (ipm10 > aqi) aqi = ipm10;
+				}
+				else
+				{
+					ringSet('#rPm10', 0);
+					$('#rnPm10').text('--');
+					$('#rnPm10').css('color', '#cccccc');
+				}
+				if (so2 != '-' && !isNaN(so2))
+				{
+					ringSet('#rSo2', AQI2Deg(iso2));
+					$('#rnSo2').text(Math.floor(so2));
+					$('#rnSo2').css('color', evaColor(iso2));
+					if (iso2 > aqi) aqi = iso2;
+				}
+				else
+				{
+					ringSet('#rSo2', 0);
+					$('#rnSo2').text('--');
+					$('#rnSo2').css('color', '#cccccc');
+				}
+				if (no2 != '-' && !isNaN(no2))
+				{
+					ringSet('#rNo2', AQI2Deg(ino2));
+					$('#rnNo2').text(Math.floor(no2));
+					$('#rnNo2').css('color', evaColor(ino2));
+					if (ino2 > aqi) aqi = ino2;
+				}
+				else
+				{
+					ringSet('#rNo2', 0);
+					$('#rnNo2').text('--');
+					$('#rnNo2').css('color', '#cccccc');
+				}
+				if (co != '-' && !isNaN(co))
+				{
+					ringSet('#rCo', AQI2Deg(ico));
+					$('#rnCo').text(Math.floor(co * 10) / 10);
+					$('#rnCo').css('color', evaColor(ico));
+					if (ico > aqi) aqi = ico;
+				}
+				else
+				{
+					ringSet('#rCo', 0);
+					$('#rnCo').text('--');
+					$('#rnCo').css('color', '#cccccc');
+				}
+				if (o3 != '-' && !isNaN(o3))
+				{
+					ringSet('#rO3', AQI2Deg(io3));
+					$('#rnO3').text(Math.floor(o3));
+					$('#rnO3').css('color', evaColor(io3));
+					if (io3 > aqi) aqi = io3;
+				}
+				else
+				{
+					ringSet('#rO3', 0);
+					$('#rnO3').text('--');
+					$('#rnO3').css('color', '#cccccc');
+				}
+				
+				if (aqi == 0) $('#mcAqi').text('--').css('color', '#cccccc');
+				else $('#mcAqi').text(aqi).css('color', evaColor(aqi));
+			}
+			function setBatteryAQIScale (battery, pm25, pm10, so2, no2, co, o3)
+			{
+				var ipm25 = IAQI(pm25, pm25eva), ipm10 = IAQI(pm10, pm10eva), iso2 = IAQI(so2, so2eva), ino2 = IAQI(no2, no2eva), ico = IAQI(co, coeva), io3 = IAQI(o3, o3eva);
+				
+				$(battery).data('pm25', pm25).data('pm10', pm10).data('so2', so2).data('no2', no2).data('co', co).data('o3', o3);
+				
+				var aqi = 0;
+				
+				if (ipm25 != -1)
+				{
+					$(battery).find('div.pm25b .bar').animate({backgroundColor: evaColor(ipm25), height: AQI2Percent(ipm25)}, battDur);
+					if (ipm25 > aqi) aqi = ipm25;
+				}
+				else
+				{
+					$(battery).find('div.pm25b .bar').animate({backgroundColor: '#cccccc', height: '0%'}, battDur);
+				}		
+				if (ipm10 != -1)
+				{
+					$(battery).find('div.pm10b .bar').animate({backgroundColor: evaColor(ipm10), height: AQI2Percent(ipm10)}, battDur);
+					if (ipm10 > aqi) aqi = ipm10;
+				}
+				else
+				{
+					$(battery).find('div.pm10b .bar').animate({backgroundColor: '#cccccc', height: '0%'}, battDur);
+				}
+				if (iso2 != -1)
+				{
+					$(battery).find('div.so2b .bar').animate({backgroundColor: evaColor(iso2), height: AQI2Percent(iso2)}, battDur);
+					if (iso2 > aqi) aqi = iso2;
+				}
+				else
+				{
+					$(battery).find('div.so2b .bar').animate({backgroundColor: '#cccccc', height: '0%'}, battDur);
+				}
+				if (ino2 != -1)
+				{
+					$(battery).find('div.no2b .bar').animate({backgroundColor: evaColor(ino2), height: AQI2Percent(ino2)}, battDur);
+					if (ino2 > aqi) aqi = ino2;
+				}
+				else
+				{
+					$(battery).find('div.no2b .bar').animate({backgroundColor: '#cccccc', height: '0%'}, battDur);
+				}
+				if (ico != -1)
+				{
+					$(battery).find('div.cob .bar').animate({backgroundColor: evaColor(ico), height: AQI2Percent(ico)}, battDur);
+					if (ico > aqi) aqi = ico;
+				}
+				else
+				{
+					$(battery).find('div.cob .bar').animate({backgroundColor: '#cccccc', height: '0%'}, battDur);
+				}
+				if (io3 != -1)
+				{
+					$(battery).find('div.o3b .bar').animate({backgroundColor: evaColor(io3), height: AQI2Percent(io3)}, battDur);
+					if (io3 > aqi) aqi = io3;
+				}
+				else
+				{
+					$(battery).find('div.o3b .bar').animate({backgroundColor: '#cccccc', height: '0%'}, battDur);
+				}
+				
+				$(battery).find('span.aqi').text(aqi).css('color', evaColor(aqi));
+			}
+			function setWindDirection (dir)
+			{
+				var angle = {
+					'N'  : 0,
+					'NNE': 22.5,
+					'NE' : 45,
+					'ENE': 67.5,
+					'E'  : 90,
+					'ESE': 112.5,
+					'SE' : 135,
+					'SSE': 157.5,
+					'S'  : 180,
+					'SSW': 202.5,
+					'SW' : 225,
+					'WSW': 247.5,
+					'W'  : 270,
+					'WNW': 292.5,
+					'NW' : 315,
+					'NNW': 337.5
+				};
+				if (dir != '-' && dir != 'C')
+				{
+					var now = $('#windDir').getRotateAngle()[0];
+					var d = Math.abs(now - angle[dir]);
+					$('#windDir').fadeIn(windDur);
+					if (d < 180 || now === undefined)
+					{
+						$('#windDir').rotate({animateTo: angle[dir], duration: windDur, callback: function()
+							{
+								$('#windDir').rotate({angle: angle[dir]});
+							}});
+					}
+					else
+					{
+						if (angle[dir] < now)
+						{
+							$('#windDir').rotate({animateTo: angle[dir] + 360, duration: windDur, callback: function()
+								{
+									$('#windDir').rotate({angle: angle[dir]});
+								}});
+						}
+						else
+						{
+							$('#windDir').rotate({angle: now + 360});
+							$('#windDir').rotate({animateTo: angle[dir], duration: windDur, callback: function()
+								{
+									$('#windDir').rotate({angle: angle[dir]});
+								}});
+						}	
+					}
+				}
+				else $('#windDir').fadeOut(200);
+			}
+			function setMainWeather (temp, humid, windSpeed, windDir, pres)
+			{
+				if (temp != undefined) $('#mcTemp').text(temp);
+				if (humid != undefined) $('#mcHum').text(humid);
+				if (windSpeed != undefined) $('#wsNum').text(windSpeed);
+				if (windDir != undefined) setWindDirection(windDir);
+				else setWindDirection('-');
+				if (pres != undefined) $('#mcPres').text(pres);
+			}
+			function setBatteryWeather (battery, temp, humid, windSpeed, windDir, pres)
+			{
+				if (temp != undefined) $(battery).find('span.temp').text(temp);
+				if (humid != undefined) $(battery).find('span.humid').text(humid);
+				if (windSpeed != undefined) $(battery).find('span.windSpeed').text(windSpeed);
+				if (windDir != undefined) $(battery).find('span.windDir').text(windDir);
+				else $(battery).find('span.windDir').text('-');
+				if (pres != undefined) $(battery).find('span.pres').text(pres);
+			}
+			function setMainWeatherStation (name, lat, lon, WMO)
+			{
+				$('#mcWeaSta').text(name);
+				$('#mcWLat').text(lat);
+				$('#mcWLong').text(lon);
+				$('#mcWMO').text(WMO);
+			}
+			function setMainAirStation (name, lat, lon, ID)
+			{
+				$('#mcAirSta').text(name);
+				$('#mcALat').text(lat);
+				$('#mcALong').text(lon);
+				$('#mcAID').text(ID);
+			}
+
+			function updateCandidate (event)
+			{
+				var added = 0;
+				$('#cityName').removeClass('target');
+				$('#lightboxContainer div.additional').css('display', 'none');
+				$('#lightboxContainer span.liMes').html('');
+				if ($('#cityName').val().length == 0)
+				{
+					$('#candidate').fadeOut(candDur);
+					return;
+				}
+				var qstr = $('#cityName').val();
+				qstr = qstr.replace(/e/gi, '(e|ê)');
+				qstr = qstr.replace(/u/gi, '(u|ü)');
+				qstr = qstr.replace(/v/gi, '(v|ü)');
+				var ex = new RegExp(qstr, 'i');
+				$('#candidate').html('');
+				for (x in cities)
+				{
+					if (cities[x][0].match(ex) || cities[x][1].match(ex))
+					{
+						$('#candidate').append('<li><span class="chnName">' + cities[x][0] + '</span> (<span class="engName">' + cities[x][1] + '</span>)' + '</li>');
+						++added;
+						if (added > 10) break;
+					}
+				}
+				if (added == 0)
+				{
+					$('#candidate').append('<li class="dummy">Not found</li>');
+				}
+				$('#candidate').css('display', 'none');
+				$('#candidate').fadeIn(candDur);
+				
+				return true;
+			}
+			function updateStation (chnName)
+			{
+					$.ajax({
+						url: '/api/city/?q=' + chnName,
+						type: 'GET',
+						dataType: 'json',
+						timeout: 5000,
+						success: function (response)
+						{
+							if (response.error != undefined)
+							{
+								$('#cityName').val('');
+								$('#cityName').removeClass('target');
+								$('#lightboxContainer div.additional').css('display', 'none');
+								$('#lightboxContainer span.liMes').html('');
+								
+								return;
+							}
+							
+							$('#lightboxContainer div.additional').css('display', 'block');
+							$('#lightboxContainer span.liMes').html('');
+							$('#staWeather').html('');
+							for (x in response.weather_stations)
+							{
+								$('#staWeather').append('<div class="liEntry"><span class="liName">' + response.weather_stations[x].name + '</span><span class="liHidden liValue">' + response.weather_stations[x].wmo + '</span><span class="liHidden liLat">' + response.weather_stations[x].lat + '</span><span class="liHidden liLon">' + response.weather_stations[x].lon + '</span></div>');
+							}
+							$('#staAir').html('');
+							for (x in response.airquality_stations)
+							{
+								$('#staAir').append('<div class="liEntry"><span class="liName">' + response.airquality_stations[x].name + '</span><span class="liHidden liValue">' + response.airquality_stations[x].code + '</span><span class="liHidden liLat">' + response.airquality_stations[x].lat + '</span><span class="liHidden liLon">' + response.airquality_stations[x].lon + '</span></div>');
+							}
+							if (response.airquality_stations.length == 0)
+							{
+								$('#lightboxContainer span.liMes').html('Air quality stations not found.');
+								$('#divAir').css('display', 'none');
+							}
+							else
+							{
+								$('#divAir').css('display', 'block');
+							}
+						},
+						error: function ()
+						{
+							$('#lightboxContainer span.liMes').html('Error when fetching data.');
+						}
+					}); 
+			}
+			
+			// For the situation that no weather station or air quality station selected, set their id '-'.
+			function updateMain ()
+			{
+				var WMO = $('#mcWMO').text();
+				var AID = $('#mcAID').text();
+				
+				if (WMO != '-')
+				{
+					$.ajax({
+						url: '/api/weather/' + WMO + '/realtime/',
+						type: 'GET',
+						dataType: 'json',
+						timeout: 30000,
+						success: function (response)
+						{
+							var data = response.realtime;
+							setMainWeather(Math.round(data.T[0]), Math.round(data.RH[0]), Math.round(data.WS10m[0] * 10) / 10, data.WD_en[0], Math.round(data.P[0]));
+						}
+					}); 
+				}
+				if (AID != '-')
+				{
+					$.ajax({
+						url: '/api/airquality/' + AID + '/realtime/',
+						type: 'GET',
+						dataType: 'json',
+						timeout: 30000,
+						success: function (response)
+						{
+							var data = response.realtime;
+							setMainAQIScale(data.PM2_5[0], data.PM10[0], data.SO2[0], data.NO2[0], data.CO[0], data.O3[0]);
+						}
+					}); 
+				}
+			}
+			function updateBattery (battery)
+			{
+				var WMO = $(battery).find('span.wmo').text();
+				var AID = $(battery).find('span.id').text();
+				
+				if (WMO != '-')
+				{
+					$.ajax({
+						url: '/api/weather/' + WMO + '/realtime/',
+						type: 'GET',
+						dataType: 'json',
+						timeout: 30000,
+						success: function (response)
+						{
+							var data = response.realtime;
+							setBatteryWeather(battery, Math.round(data.T[0]), Math.round(data.RH[0]), Math.round(data.WS10m[0] * 10) / 10, data.WD_en[0], Math.round(data.P[0]));
+							if (WMO == $('#mcWMO').text())
+							{
+								setMainWeather(Math.round(data.T[0]), Math.round(data.RH[0]), Math.round(data.WS10m[0] * 10) / 10, data.WD_en[0], Math.round(data.P[0]));
+							}
+						}
+					}); 
+				}
+				if (AID != '-')
+				{
+					$.ajax({
+						url: '/api/airquality/' + AID + '/realtime/',
+						type: 'GET',
+						dataType: 'json',
+						timeout: 30000,
+						success: function (response)
+						{
+							var data = response.realtime;
+							setBatteryAQIScale(battery, data.PM2_5[0], data.PM10[0], data.SO2[0], data.NO2[0], data.CO[0], data.O3[0]);
+							if (AID == $('#mcAID').text())
+							{
+								setMainAQIScale(data.PM2_5[0], data.PM10[0], data.SO2[0], data.NO2[0], data.CO[0], data.O3[0]);
+							}
+						}
+					}); 
+				}
+			}
+			
+			var maxCities = 24;
+			function makeBlockHtml (block)
+			{
+				var res = $('#custom div.model').clone(false).addClass('clickable').removeClass('model')
+					.children('h1')
+						.text(block.name)
+						.end()
+					.children('h2')
+						.text(block.eng)
+						.end()
+					.children('span.locWeather')
+						.children('span.name').text(block.w.name).end()
+						.children('span.wmo').text(block.w.wmo).end()
+						.children('span.lat').text(block.w.lat).end()
+						.children('span.lon').text(block.w.lon).end()
+						.end()
+					.children('span.locAir')
+						.children('span.name').text(block.a.name).end()
+						.children('span.id').text(block.a.id).end()
+						.children('span.lat').text(block.a.lat).end()
+						.children('span.lon').text(block.a.lon).end()
+						.end()
+				return res[0];
+			}
+			function readCityList ()
+			{
+				$('#custom').remove('div.clickable');
+				var cityList = $.evalJSON($.cookie('city'));
+				for (x in cityList)
+				{
+					$(makeBlockHtml(cityList[x])).insertBefore('#addNewCustom');
+				}
+				if ($('#custom').find('div.clickable').size() >= maxCities)
+				{
+					$('#addNewCustom').css('display', 'none');
+				}
+			}
+			function writeCityList ()
+			{
+				var cityList = [];
+				$('#custom').find('div.clickable').each(function(){
+					var obj = new Object();
+					obj.name = $(this).children('h1').text();
+					obj.eng = $(this).children('h2').text();
+					
+					var s = $(this).children('span.locWeather');
+					obj.w = new Object();
+					obj.w.name = s.children('span.name').text();
+					obj.w.wmo = s.children('span.wmo').text();
+					obj.w.lat = s.children('span.lat').text();
+					obj.w.lon = s.children('span.lon').text();
+					
+					s = $(this).children('span.locAir');
+					obj.a = new Object();
+					obj.a.name = s.children('span.name').text();
+					obj.a.id = s.children('span.id').text();
+					obj.a.lat = s.children('span.lat').text();
+					obj.a.lon = s.children('span.lon').text();
+					
+					cityList.push(obj);
+				});
+				$.cookie('city', $.toJSON(cityList), {expires: 3650});
+				return $.toJSON(cityList);
+			}
+			function collectMessage ()
+			{
+				var name = $('#chnRename').val();
+				var eng = $('#engRename').val().toUpperCase();
+				var w = new Object(), a = new Object();
+				
+				var jw = $('#staWeather div.liSelected');
+				if (jw.size() > 0)
+				{
+					w.name = jw.children('span.liName').text();
+					w.wmo = jw.children('span.liValue').text();
+					w.lat = jw.children('span.liLat').text();
+					w.lon = jw.children('span.liLon').text();
+				}
+				else
+				{
+					w.name = '--', w.wmo = '-', w.lat = '-', w.lon = '-';
+				}
+				
+				var ja = $('#staAir div.liSelected');
+				if (ja.size() > 0)
+				{
+					a.name = ja.children('span.liName').text();
+					a.id = ja.children('span.liValue').text();
+					a.lat = ja.children('span.liLat').text();
+					a.lon = ja.children('span.liLon').text();
+				}
+				else
+				{
+					a.name = '--', a.id = '-', a.lat = '-', a.lon = '-';
+				}
+				
+				var res = new Object();
+				res.name = name, res.eng = eng, res.w = w, res.a = a;
+				
+				return res;
+			}
+			
+
+			$(function(){
+				// Cookie initialization
+				if ($.cookie('city') == undefined)
+				{
+					$.cookie('city', '[{"name":"北京","eng":"BEIJING","w":{"name":"海淀","wmo":"54399","lat":"39.99","lon":"116.60"},"a":{"name":"海淀万柳","id":"1007A","lat":"40.00","lon":"116.60"}},{"name":"杭州","eng":"HANGZHOU","w":{"name":"杭州","wmo":"58457","lat":"30.23","lon":"120.17"},"a":{"name":"朝晖五区","id":"1229A","lat":"30.29","lon":"120.16"}},{"name":"上海","eng":"SHANGHAI","w":{"name":"上海","wmo":"58367","lat":"31.17","lon":"121.43"},"a":{"name":"静安监测站","id":"1147A","lat":"31.23","lon":"121.42"}},{"name":"苏州","eng":"SUZHOU","w":{"name":"苏州","wmo":"58349","lat":"31.27","lon":"120.65"},"a":{"name":"彩香","id":"1162A","lat":"31.30","lon":"120.59"}},{"name":"郑州","eng":"ZHENGZHOU","w":{"name":"郑州","wmo":"57083","lat":"34.72","lon":"113.65"},"a":{"name":"郑纺机","id":"1317A","lat":"34.77","lon":"113.64"}},{"name":"广州","eng":"GUANGZHOU","w":{"name":"广州","wmo":"59287","lat":"23.22","lon":"113.48"},"a":{"name":"市监测站","id":"1352A","lat":"23.13","lon":"113.26"}},{"name":"石家庄","eng":"SHIJIAZHUANG","w":{"name":"石家庄","wmo":"53698","lat":"38.03","lon":"114.42"},"a":{"name":"西北水源","id":"1031A","lat":"38.17","lon":"114.44"}},{"name":"南京","eng":"NANJING","w":{"name":"南京","wmo":"58238","lat":"31.93","lon":"118.9"},"a":{"name":"中华门","id":"1154A","lat":"32.01","lon":"118.78"}}]', {expires: 3650});
+				}
+				readCityList();
+				
+				// Fetch city list
+				$.ajax({
+					url: '/api/city/all/',
+					type: 'GET',
+					dataType: 'json',
+					timeout: 5000,
+					success: function (response)
+					{
+						cities = response.cities;
+					},
+					error: function ()
+					{
+						$('#lightboxContainer span.intro').text('Error when fetching city list.');
+						$('#cityName').css('display', 'none');
+					}
+				}); 
+				
+				$('#cityName').keyup(updateCandidate);
+				$('#closeLightbox').click(function(){
+					$('#lightbox').fadeOut(lightboxDur);
+				});
+				$('#addNew').click(function(){
+					$('#lightbox').fadeIn(lightboxDur);
+					$('#cityName').val('');
+					$('#candidate').css('display', 'none');
+					updateCandidate();
+					
+					$('#divSubmit span.submit').unbind('click').click(function(){
+						var newBlock = makeBlockHtml(collectMessage());
+						$(newBlock).insertBefore('#addNewCustom');
+						updateBattery(newBlock);
+						$('#closeLightbox').click();
+						if ($('#custom').find('div.clickable').size() >= maxCities)
+						{
+							$('#addNewCustom').css('display', 'none');
+						}
+						writeCityList();
+					});
+				});
+				$('#candidate li').live('click', function(){
+					if ($(this).hasClass('dummy')) return;
+					
+					var chnName = $(this).find('span.chnName').text();
+					var engName = $(this).find('span.engName').text();
+					
+					$('#chnRename').val(chnName);
+					$('#engRename').val(engName);
+					
+					$('#cityName').val(chnName);
+					$('#cityName').addClass('target');
+					$('#candidate').fadeOut(candDur);
+					$('#lightboxContainer span.liMes').html('Fetching data...');
+					
+					updateStation(chnName);
+					
+					return true;
+				});
+				$('div.clickable').live('click', function(){
+					$('#caption h1').text($(this).find('h1').text());
+					$('#caption h2').text($(this).find('h2').text());
+					setMainWeather($(this).find('span.temp').text(), $(this).find('span.humid').text(), $(this).find('span.windSpeed').text(), $(this).find('span.windDir').text(), $(this).find('span.pres').text());
+					setMainAQIScale($(this).data('pm25'), $(this).data('pm10'), $(this).data('so2'), $(this).data('no2'), $(this).data('co'), $(this).data('o3'));
+					var loc = $(this).find('span.locWeather');
+					setMainWeatherStation(loc.find('span.name').text(), loc.find('span.lat').text(), loc.find('span.lon').text(), loc.find('span.wmo').text());
+					loc = $(this).find('span.locAir');
+					setMainAirStation(loc.find('span.name').text(), loc.find('span.lat').text(), loc.find('span.lon').text(), loc.find('span.id').text());
+				});
+				$('#lightboxContainer div.liEntry').live('click', function(){
+					$(this).parent('div.liTable').children('div.liSelected').removeClass('liSelected');
+					$(this).addClass('liSelected');
+				});
+				$('div.removeCity').live('click', function(){
+					$(this).parent('div.clickable').remove();
+					writeCityList();
+					return false;
+				});
+				$('div.modifyCity').live('click', function(){
+					$('#cityName').val('');
+					$('#candidate').css('display', 'none');
+					updateCandidate();
+					
+					var chnName = $(this).parent('div.clickable').children('h1').text();
+					var engName = $(this).parent('div.clickable').children('h2').text();
+					var thisBlock = $(this).parent('div.clickable');
+					
+					$('#chnRename').val(chnName);
+					$('#engRename').val(engName);
+					
+					$('#cityName').val(chnName);
+					$('#cityName').addClass('target');
+					$('#candidate').fadeOut(candDur);
+					$('#lightboxContainer span.liMes').html('Fetching data...');
+					
+					updateStation(chnName);
+					$('#lightbox').fadeIn(lightboxDur);
+					
+					$('#divSubmit span.submit').unbind('click').click(function(){
+						var newBlock = makeBlockHtml(collectMessage());
+						$(thisBlock).replaceWith(newBlock);
+						updateBattery(newBlock);
+						$('#closeLightbox').click();
+						writeCityList();
+					});
+					
+					return false;
+				});
+				
+				$('#custom').sortable({
+					items: 'div.clickable',
+					update: function(){
+						writeCityList();
+					}
+				});
+				
+				ringInit('#rPm25');
+				ringInit('#rPm10');
+				ringInit('#rSo2');
+				ringInit('#rNo2');
+				ringInit('#rCo');
+				ringInit('#rO3');
+				
+				// code used for debugging and testing.
+				
+				updateMain();
+				$('div.clickable').each(function(){updateBattery(this)});
+				
+				// $('#lightbox').fadeIn(lightboxDur);
+			});
+		</script>
+	</head>
+	<body>
+		<div id="lightbox">
+			<div id="lightboxContainer">
+				<div id="closeLightbox"></div>
+				<p>
+					<span class="intro">Name (or Regular Expression): </span><input type="text" name="cityName" id="cityName" />
+				</p>
+				<ul id="candidate"></ul>
+				<div class="additional">
+					<span class="intro">Rename (Chinese): </span><input type="text" class="div2" name="chnName" id="chnRename" /><br />
+					<span class="intro">Rename (English): </span><input type="text" class="div2" name="engName" id="engRename" />
+				</div>
+				<span class="liMes"></span>
+				<div class="additional">
+					<span class="intro">Weather stations: </span>
+					<div id="staWeather" class="liTable">
+					</div>
+				</div>
+				<div class="additional" id="divAir">
+					<span class="intro">Air quality stations: </span>
+					<div id="staAir" class="liTable">
+					</div>
+				</div>
+				<div class="additional" id="divSubmit">
+					<span class="submit">- SUBMIT -</span>
+				</div>
+			</div>
+		</div>
+		<div id="mainContainer">
+			<div id="logo"></div>
+			<div id="contents">
+				<div id="mainCol"> <!-- 主栏 -->
+					<div id="caption">
+						<h1>北京</h1>
+						<h2>BEIJING</h2>
+					</div>
+					<div id="mcNum">
+						<div id="weatherCol">
+							<div id="mcTempGrid" class="mBlock">
+								<span class="mBlockCaption">Temperature</span>
+								<span class="mLargeText" id="mcTemp">--</span> <!-- 放温度 -->
+							</div>
+							<div id="mcHumGrid" class="mBlock">
+								<span class="mBlockCaption">Humidity</span>
+								<span class="mLargeText" id="mcHum">--</span> <!-- 放湿度 -->
+							</div>
+							<div id="mcWindGrid" class="mBlock">
+								<span class="mBlockCaption">Wind</span>
+								<div id="windRing">
+									<div id="windDir"></div> <!-- 风向标，用$('#windDir').rotate()旋转 -->
+									<span id="windSpeed"><span id="wsNum">--</span><span class="mcUnit"> m/s</span></span> <!-- 放风速 -->
+								</div>
+							</div>
+							<div id="mcPresGrid" class="mBlock">
+								<span class="mBlockCaption">Air Pressure</span>
+								<span class="mLargeText" id="mcPres">--</span> <!-- 放气压 -->
+							</div>
+							<div id="mcWeaLocGrid" class="mBlock">
+								<span class="mBlockCaption">Location</span>
+								<span class="mStationName" id="mcWeaSta">海淀</span> <!-- 放气象站 -->
+								<span class="mStationCoord"><span class="latitude" id="mcWLat">39.99</span> N | <span class="longitude" id="mcWLong">116.60</span> E</span> <!-- 放气象站坐标 -->
+								<span class="hidden" id="mcWMO">54399</span>
+							</div>
+						</div>
+						<div id="airCol">
+							<div id="mcAqiGrid" class="mBlock">
+								<span class="mBlockCaption">AQI</span>
+								<span class="mLargeText" id="mcAqi">--</span> <!-- 放AQI -->
+							</div>
+							<div id="mcRingsGrid">
+								<div id="mcPm25" class="lmeter">
+									<span class="ringCaption">PM2.5</span>
+									<div class="ringContainer" id="rPm25"></div>
+									<span class="ringNum" id="rnPm25">--</span>
+								</div>
+								<div id="mcPm10" class="rmeter">
+									<span class="ringCaption">PM10</span>
+									<div class="ringContainer" id="rPm10"></div>
+									<span class="ringNum" id="rnPm10">--</span>
+								</div>
+								<div id="mcSo2" class="lmeter">
+									<span class="ringCaption">SO<span class="subs">2</span></span>
+									<div class="ringContainer" id="rSo2"></div>
+									<span class="ringNum" id="rnSo2">--</span>
+								</div>
+								<div id="mcNo2" class="rmeter">
+									<span class="ringCaption">NO<span class="subs">2</span></span>
+									<div class="ringContainer" id="rNo2"></div>
+									<span class="ringNum" id="rnNo2">--</span>
+								</div>
+								<div id="mcCo" class="lmeter">
+									<span class="ringCaption">CO</span>
+									<div class="ringContainer" id="rCo"></div>
+									<span class="ringNum" id="rnCo">--</span>
+								</div>
+								<div id="mcO3" class="rmeter">
+									<span class="ringCaption">O<span class="subs">3</span></span>
+									<div class="ringContainer" id="rO3"></div>
+									<span class="ringNum" id="rnO3">--</span>
+								</div>
+							</div>
+							<div id="mcAirLocGrid" class="mBlock">
+								<span class="mBlockCaption">Location</span>
+								<span class="mStationName" id="mcAirSta">海淀万柳</span> <!-- 放空气站 -->
+								<span class="mStationCoord"><span class="latitude" id="mcALat">40.00</span> N | <span class="longitude" id="mcALong">116.60</span> E</span> <!-- 放空气站坐标 -->
+								<span class="hidden" id="mcAID">1007A</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div id="custom"> <!-- 左侧自定义城市 -->
+					<div class="customBlock model">
+						<h1>北京</h1>
+						<h2>BEIJING</h2>
+						
+						<div class="removeCity cBlockSet"></div>
+						<div class="modifyCity cBlockSet"></div>
+						
+						<span class="locWeather hidden"><span class="name">海淀</span><span class="wmo">54399</span><span class="lat">39.99</span><span class="lon">116.60</span></span>
+						<span class="locAir hidden"><span class="name">海淀万柳</span><span class="id">1007A</span><span class="lat">40.00</span><span class="lon">116.60</span></span>
+						
+						<div><span class="temp">--</span><span class="unit"> °C</span></div>
+						<div><span class="humid">--</span><span class="unit"> %</span></div>
+						<div><span class="windSpeed">--</span><span class="smallUnit">m/s</span><span class="windDir">-</span></div>
+						<div><span class="aqi">--</span></div>
+						<span class="pres hidden">--</span>
+						
+						<div class="battery">
+							<div class="pm25b">
+								<div class="bar"></div>
+							</div>
+							<div class="pm10b">
+								<div class="bar"></div>
+							</div>
+							<div class="so2b">
+								<div class="bar"></div>
+							</div>
+							<div class="no2b">
+								<div class="bar"></div>
+							</div>
+							<div class="cob">
+								<div class="bar"></div>
+							</div>
+							<div class="o3b">
+								<div class="bar"></div>
+							</div>
+							<div class="battDesc"></div>
+						</div>
+					</div>
+					<div id="addNewCustom" class="customBlock">
+						<div id="addNew"></div>
+						<span id="addNewDesc">Click here to add your city.</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

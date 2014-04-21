@@ -1,0 +1,538 @@
+﻿body
+{
+	background-color: #fffff3;
+	margin: 0;
+}
+span.hidden
+{
+	display: none;
+}
+#mainContainer
+{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	overflow: auto;
+}
+#mainCol
+{
+	width: 250px;
+	right: 40%;
+	position: fixed;
+}
+#logo
+{
+	width: 40%;
+	height: 100%;
+	right: 0;
+	position: fixed;
+	background-image: url(../image/logo.jpg);
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+}
+#contents
+{
+	width: 60%;
+}
+#custom
+{
+	padding: 40px 310px 40px 60px;	
+}
+#caption
+{
+	text-align: center;
+	padding-top: 25px;
+	height: 75px;
+	width: 100%;
+	background-image: url(../image/captionBack.png);
+}
+#caption h1
+{
+	margin: 0;
+	color: white;
+	font-family: "Adobe 楷体 Std R", "楷体", serif;
+	font-weight: normal;
+	font-size: 32px;
+	line-height: 32px;
+}
+#caption h2
+{
+	margin: 0;
+	color: #e5e5e5;
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+	font-weight: normal;
+	font-size: 16px;
+	line-height: 16px;
+}
+#weatherCol
+{
+	float: right;
+	width: 120px;
+	margin-left: 5px;
+}
+#airCol
+{
+	float: right;
+	width: 120px;
+	margin-right: 5px;
+}
+div.mBlock
+{
+	position: relative;
+	height: 100px;
+}
+#weatherCol div.mBlock + div.mBlock
+{
+	border-top: 1px solid black;
+}
+span.mBlockCaption
+{
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+}
+span.mLargeText
+{
+	color: #666666;
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+	display: block;
+	font-size: 48px;
+	margin-top: 5px;
+	width: 120px;
+	text-align: center;
+}
+#windRing
+{
+	width: 50px;
+	height: 68px;
+	background-image: url(../image/windRing.png);
+	background-repeat: no-repeat;
+	margin-left: 35px;
+	position: relative;
+}
+#windDir
+{
+	width: 50px;
+	height: 50px;
+	background-image: url(../image/windArrow.png);
+	background-repeat: no-repeat;
+}
+#windSpeed
+{
+	display: block;
+	position: absolute;
+	top: 50px;
+	width: 50px;
+	height: 18px;
+	font-size: 18px;
+	text-align: center;
+	color: #666666;
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+}
+span.mcUnit
+{
+	font-size: 16px;
+}
+span.mStationName
+{
+	display: block;
+	font-family: "Adobe 楷体 Std R", "楷体", serif;
+	font-size: 20px;
+	color: #666666;
+	line-height: 22px;
+	width: 100px;
+	margin-left: 10px;
+	margin-top: 10px;
+	text-align: center;
+}
+span.mStationCoord
+{
+	display: block;
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+	font-size: 10px;
+	color: #666666;
+	width: 120px;
+	text-align: center;
+	margin-top: 2px;
+}
+span.latitude
+{
+	color: #38b4fb;
+}
+span.longitude
+{
+	color: #fb387d;
+}
+#mcAqi
+{
+	text-shadow: 1px 1px 2px #cccccc;
+}
+#mcRingsGrid
+{
+	border-top: 3px solid black;
+	border-bottom: 3px solid black;
+	height: 240px;
+	padding-bottom: 20px;
+	padding-right: 5px;
+}
+div.lmeter
+{
+	float: left;
+}
+div.rmeter
+{
+	float: right;
+}
+div.lmeter, div.rmeter
+{
+	margin-top: 15px;
+	position: relative;
+}
+span.ringCaption
+{
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+	font-size: 10px;
+	display: block;
+	width: 50px;
+	text-align: center;
+}
+span.ringNum
+{
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+	font-size: 20px;
+	position: absolute;
+	top: 26px;
+	left: 4px;
+	width: 40px;
+	height: 30px;
+	line-height: 27px;
+	z-index: 100;
+	text-align: center;
+	display: block;
+	text-shadow: 1px 1px 2px #cccccc;
+}
+span.subs
+{
+	font-size: 8px;
+	position: relative;
+	top: 2px;
+}
+div.model
+{
+	display: none;
+}
+div.customBlock
+{
+	width: 110px;
+	height: 215px;
+	padding: 5px 5px;
+	margin: 0 10px 20px 10px;
+	position: relative;
+	text-align: center;
+	float: right;
+	cursor: pointer;
+}
+.customBlock h1
+{
+	margin: 0;
+	color: black;
+	font-family: "Adobe 楷体 Std R", "楷体", serif;
+	font-weight: normal;
+	font-size: 24px;
+	line-height: 24px;
+	margin-top: 7px;
+	height: 24px;
+	overflow: hidden;
+}
+.customBlock h2
+{
+	margin: 0;
+	color: #4c4c4c;
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+	font-weight: normal;
+	font-size: 12px;
+	line-height: 16px;
+	width: 95px;
+	height: 16px;
+	overflow: hidden;
+	border-bottom: 2px solid black;
+	padding-bottom: 2px;
+	margin-bottom: 2px;
+	margin-left: 8px;
+}
+.customBlock div.cBlockSet
+{
+	position: absolute;
+	top: 0;
+	width: 24px;
+	height: 24px;
+	cursor: pointer;
+	background-repeat: no-repeat;
+	display: none;
+}
+div.removeCity
+{
+	background-image: url(../image/removeCity.png) !important;
+	right: 0;
+}
+div.removeCity:hover
+{
+	background-image: url(../image/removeCityHover.png) !important;
+}
+div.modifyCity
+{
+	background-image: url(../image/modifyCity.png) !important;
+	left: 0;
+}
+div.modifyCity:hover
+{
+	background-image: url(../image/modifyCityHover.png) !important;
+}
+.clickable:hover
+{
+	background-image: url(../image/newBlock.png);
+}
+.clickable:hover div.cBlockSet
+{
+	display: block;
+}
+.customBlock span
+{
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+	font-size: 24px;
+	line-height: 27px;
+}
+.customBlock span.unit
+{
+	font-size: 18px;
+}
+.customBlock span.smallUnit
+{
+	font-size: 14px;
+	margin: 0 4px 0 2px;
+}
+.customBlock span.windDir
+{
+	font-size: 18px;
+}
+.customBlock span.aqi
+{
+	text-shadow: 1px 1px 2px #cccccc;
+}
+div.battery
+{
+	width: 87px;
+	height: 34px;
+	margin: 2px 0 0 11px;
+	position: relative;
+}
+div.battery > div
+{
+	width: 12px;
+	height: 34px;
+	background-color: #eeeeee;
+	float: left;
+	position: relative;
+}
+div.battery > div + div
+{
+	margin-left: 3px;
+}
+div.battery div.battDesc
+{
+	width: 87px;
+	position: absolute;
+	float: none;
+	margin: 0;
+	top: 0;
+	left: 0;
+	background-color: transparent;
+}
+div.battery div.battDesc:hover
+{
+	background-image: url(../image/pollutionDesc.png);
+}
+div.battery > div > div
+{
+	position: absolute;
+	bottom: 0px;
+	width: 100%;
+	height: 0%;
+	background-color: #eeeeee;
+}
+#addNewCustom
+{
+	background-image: url(../image/newBlock.png);
+}
+#addNew
+{
+	width: 44px;
+	height: 44px;
+	position: absolute;
+	background-image: url(../image/add-light.png);
+	left: 50%;
+	top: 50%;
+	margin-left: -22px;
+	margin-top: -42px;
+}
+#addNew:hover
+{
+	background-image: url(../image/add-blue.png);
+}
+#addNewDesc
+{
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+	font-size: 12px;
+	line-height: 14px;
+	position: absolute;
+	display: block;
+	width: 66px;
+	color: #777777;
+	text-align: left;
+	top: 120px;
+	left: 29px;
+}
+#lightbox
+{
+	display: none;
+	background-image: url(../image/blackAlpha.png);
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 1000;
+	font-family: "Adobe 楷体 Std R", "楷体", serif;
+}
+#lightboxContainer
+{
+	background-color: white;
+	background-image: url(../image/addCity.png);
+	background-repeat: no-repeat;
+	background-position: bottom right;
+	position: absolute;
+	width: 492px;
+	height: 360px;
+	left: 50%;
+	top: 50%;
+	margin: -200px 0 0 -250px;
+	padding: 20px 20px;
+	overflow: auto;
+}
+#lightboxContainer span.intro
+{
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+}
+#lightboxContainer span.liMes
+{
+	margin-bottom: 7px;
+	display: block;
+}
+#lightboxContainer p, #lightbox div.additional
+{
+	margin: 0 0 5px 0;
+}
+#closeLightbox
+{
+	position: absolute;
+	background-image: url(../image/closeLightbox.png);
+	width: 35px;
+	height: 35px;
+	left: 475px;
+	top: 15px;
+	cursor: pointer;
+}
+#closeLightbox:hover
+{
+	background-image: url(../image/closeLightboxHover.png);
+}
+input[type=text]
+{
+	width: 150px;
+	border: 0;
+	border-bottom: 1px solid black;
+	margin-left: 3px;
+}
+input.div2
+{
+	position: absolute;
+	left: 11em;
+}
+#cityName.target
+{
+	color: #2a8cf7;
+}
+#candidate
+{
+	display: none;
+	position: absolute;
+	left: 215px;
+	top: 25px;
+	width: 200px;
+	background-color: #ddedfe;
+	padding: 0;
+}
+#candidate li
+{
+	list-style-type: none;
+	padding: 2px;
+	border-bottom: 1px solid #66affe;
+	cursor: pointer;
+}
+#candidate li:hover
+{
+	background-color: #fffff3;
+	border-bottom: 1px solid #ffffa6;
+}
+#candidate li.dummy
+{
+	background-color: #fedddd;
+	border-bottom: 1px solid #fd7b7b;
+}
+#candidate li span.engName
+{
+	font-family: "Adobe Garamond Pro", "Garamond", "Times New Roman", serif;
+}
+#lightboxContainer div.liEntry
+{
+	width: 68px;
+	height: 58px;
+	background-color: #ddedfe;
+	float: left;
+	margin: 0 5px 6px 0;
+	padding: 2px 3px;
+	border-bottom: 1px solid #66affe;
+	cursor: pointer;
+}
+#lightboxContainer div.liEntry:hover
+{
+	background-color: #f2f8ff;
+}
+#lightboxContainer div.liSelected
+{
+	background-color: #fdfdbc !important;
+	border-bottom: 1px solid #fbfb66 !important;
+}
+#lightboxContainer div.liEntry span.liHidden
+{
+	display: none;
+}
+#lightboxContainer div.additional
+{
+	display: none;
+	clear: both;
+}
+#divSubmit
+{
+	text-align: center;
+	font-size: 16px;
+	line-height: 20px;
+	height: 20px;
+	width: 100%;
+	padding-top: 5px;
+}
+#divSubmit span.submit
+{
+	cursor: pointer;
+}
+#divSubmit span.submit:hover
+{
+	color: #2a8cf7;
+}

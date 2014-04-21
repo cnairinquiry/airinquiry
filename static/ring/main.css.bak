@@ -1,0 +1,45 @@
+﻿div.ringContainer
+{
+	position: relative;
+	width: 75px;
+	height: 75px;
+}
+div.innerColorRing
+{
+	width: 75px;
+	height: 75px;
+}
+div.innerRing
+{
+	width: 75px;
+	height: 75px;
+	background-color: #cccccc;
+}
+svg.halfLeftRing, svg.halfRightRing, svg.baseRing
+{
+	position: absolute;
+	width: 75px;
+	height: 75px;
+	top: 0px;
+}
+svg.halfRightRing
+{
+	z-index: 10;
+}
+svg.halfLeftRing
+{
+	z-index: 20;
+}
+div.leftBlock
+{
+	width: 75px;
+	height: 75px;
+	position: absolute;
+	top: 0px;
+	background-image: url(leftcover.png);
+	background-repeat: no-repeat;
+	z-index: 30;
+	display: none;
+}
+
+

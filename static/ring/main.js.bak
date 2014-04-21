@@ -1,0 +1,162 @@
+﻿function _getColor (ring, deg)
+{
+	if (deg <= $(ring).data('bound1')) return '#00e400';
+	else if (deg <= $(ring).data('bound2')) return '#f0f000';
+	else if (deg <= $(ring).data('bound3')) return '#ff7e00';
+	else if (deg <= $(ring).data('bound4')) return '#ff0000';
+	else if (deg <= $(ring).data('bound5')) return '#99004c';
+	else return '#7e0023';
+}
+function ringSet (ring, rotateTo, callBack)
+{
+	var callBack = arguments[2] ? arguments[2] : function() {}
+	var b = $(ring).data('angle'), c = rotateTo - b;
+	if (b == 0)
+	{
+		if (rotateTo != 0) 
+		{
+			$(ring).find('svg.halfLeftRing').css('display', 'block');
+			$(ring).find('svg.halfRightRing').css('display', 'block');
+		}
+	}
+	var dur = 1000;
+	var eas = function (x, t, b, c, d) { return c * (1 - (t = 1 - t / d) * t * t * t) + b; };
+	$(ring).find('div.innerColorRing').animate({backgroundColor: _getColor(ring, rotateTo)}, dur);
+	if (b >= 180 && rotateTo >= 180)
+	{
+		$(ring).find('svg.halfLeftRing').rotate({
+			angle: b,
+			animateTo: rotateTo,
+			duration: dur,
+			easing: eas,
+			callback: callBack
+		});
+	}
+	else if (b < 180 && rotateTo < 180)
+	{
+		$(ring).find('svg.halfRightRing').rotate({
+			angle: 180 + b,
+			animateTo: 180 + rotateTo,
+			duration: dur,
+			easing: eas,
+			callback: function ()
+			{
+				if (rotateTo == 0)
+				{
+					$(ring).find('svg.halfLeftRing').css('display', 'none');
+					$(ring).find('svg.halfRightRing').css('display', 'none');
+				}
+				callBack();
+			}
+		});
+	}
+	else if (b < 180 && rotateTo >= 180)
+	{
+		var t0 = Math.pow((rotateTo - 180) / c, 0.25);
+		var tr = dur * (1 - t0);
+		$(ring).find('svg.halfRightRing').rotate({
+			angle: 180 + b,
+			animateTo: 360,
+			duration: tr,
+			easing: function (x0, t, b0, c0, d0)
+			{
+				var tt = 1 - t / dur;
+				return c * (1 - tt * tt * tt * tt) + b + 180;
+			},
+			callback: function ()
+			{
+				$(ring).find('div.leftBlock').css('display', 'none');
+				$(ring).find('svg.halfLeftRing').rotate({
+					angle: 180,
+					animateTo: rotateTo,
+					duration: dur - tr,
+					easing: function (x0, t, b0, c0, d0)
+					{
+						t = t + tr;
+						var tt = 1 - t / dur;
+						return c * (1 - tt * tt * tt * tt) + b;
+					},
+					callback: callBack
+				});
+			}
+		});
+	}
+	else if (b >= 180 && rotateTo < 180)
+	{
+		var t0 = Math.pow((rotateTo - 180) / c, 0.25);
+		var tr = dur * (1 - t0);
+		$(ring).find('svg.halfLeftRing').rotate({
+			angle: b,
+			animateTo: 180,
+			duration: tr,
+			easing: function (x0, t, b0, c0, d0)
+			{
+				var tt = 1 - t / dur;
+				return c * (1 - tt * tt * tt * tt) + b;
+			},
+			callback: function ()
+			{
+				$(ring).find('div.leftBlock').css('display', 'block');
+				$(ring).find('svg.halfLeftRing').rotate({angle: 0});
+				$(ring).find('svg.halfRightRing').rotate({
+					angle: 360,
+					animateTo: rotateTo + 180,
+					duration: dur - tr,
+					easing: function (x0, t, b0, c0, d0)
+					{
+						t = t + tr;
+						var tt = 1 - t / dur;
+						return c * (1 - tt * tt * tt * tt) + b + 180;
+					},
+					callback: function ()
+					{
+						if (rotateTo == 0)
+						{
+							$(ring).find('svg.halfLeftRing').css('display', 'none');
+							$(ring).find('svg.halfRightRing').css('display', 'none');
+						}
+						callBack();
+					}
+				});
+			}
+		});
+	}
+	$(ring).data('angle', rotateTo);
+}
+function ringImmeSet (ring, val)
+{
+	if (val < 180)
+	{
+		$(ring).find('svg.halfLeftRing').rotate({angle: 0});
+		$(ring).find('svg.halfRightRing').rotate({angle: val + 180});
+		$(ring).find('div.leftBlock').css('display', 'block');
+	}
+	else
+	{
+		$(ring).find('svg.halfRightRing').rotate({angle: 0});
+		$(ring).find('svg.halfLeftRing').rotate({angle: val});
+		$(ring).find('div.leftBlock').css('display', 'none');
+	}
+	if (val == 0)
+	{
+		$(ring).find('svg.halfLeftRing').css('display', 'none');
+		$(ring).find('svg.halfRightRing').css('display', 'none');
+	}
+	else
+	{
+		$(ring).find('svg.halfLeftRing').css('display', 'block');
+		$(ring).find('svg.halfRightRing').css('display', 'block');
+	}
+	$(ring).find('div.innerColorRing').css('background-color', _getColor(ring, val));
+	$(ring).data('angle', val);		
+}
+function ringInit (ring, bound1, bound2, bound3, bound4, bound5)
+{
+	$(ring).html('<svg class="halfLeftRing"><defs><mask id="leftMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="ring/mask_l.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#leftMask);"><div class="innerColorRing innerLeftRing"></div></foreignObject></svg><svg class="halfRightRing"><defs><mask id="rightMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="ring/mask_r.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#rightMask);"><div class="innerColorRing"></div></foreignObject></svg><svg class="baseRing"><defs><mask id="wholeMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="ring/mask.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#wholeMask);"><div class="innerRing"></div></foreignObject></svg><div class="leftBlock"></div>');
+	$(ring).data('bound1', arguments[1] ? arguments[1] : 60);
+	$(ring).data('bound2', arguments[2] ? arguments[2] : 120);
+	$(ring).data('bound3', arguments[3] ? arguments[3] : 180);
+	$(ring).data('bound4', arguments[4] ? arguments[4] : 240);
+	$(ring).data('bound5', arguments[5] ? arguments[5] : 300);
+	ringImmeSet(ring, 0);
+}
