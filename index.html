@@ -3,6 +3,7 @@
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<title>Air Inquiry</title>
+		<link rel="shortcut icon" href="/static/image/favicon.ico" type="image/x-icon" />
 		<link rel="stylesheet" type="text/css" href="static/ring/main.css" />
 		<link rel="stylesheet" type="text/css" href="static/css/page.css" />
 		<script type="text/javascript" src="static/js/jquery-1.7.2.min.js"></script>
@@ -41,7 +42,7 @@
 			function evaColor (AQI)
 			{
 				if (AQI <= 50) return '#00e400';
-				else if (AQI <= 100) return '#fcf302';//'#ffff00';
+				else if (AQI <= 100) return '#f2db07';//'#ffff00';
 				else if (AQI <= 150) return '#ff7e00';
 				else if (AQI <= 200) return '#ff0000';
 				else if (AQI <= 300) return '#99004c';
@@ -75,7 +76,7 @@
 				
 				var aqi = 0;
 				
-				if (pm25 != '-' && !isNaN(pm25))
+				if (pm25 != '-' && pm25 >= 0 && !isNaN(pm25))
 				{
 					ringSet('#rPm25', AQI2Deg(ipm25));
 					$('#rnPm25').text(Math.floor(pm25));
@@ -88,7 +89,7 @@
 					$('#rnPm25').text('--');
 					$('#rnPm25').css('color', '#cccccc');
 				}
-				if (pm10 != '-' && !isNaN(pm10))
+				if (pm10 != '-' && pm10 >= 0 && !isNaN(pm10))
 				{
 					ringSet('#rPm10', AQI2Deg(ipm10));
 					$('#rnPm10').text(Math.floor(pm10));
@@ -101,7 +102,7 @@
 					$('#rnPm10').text('--');
 					$('#rnPm10').css('color', '#cccccc');
 				}
-				if (so2 != '-' && !isNaN(so2))
+				if (so2 != '-' && so2 >= 0 && !isNaN(so2))
 				{
 					ringSet('#rSo2', AQI2Deg(iso2));
 					$('#rnSo2').text(Math.floor(so2));
@@ -114,7 +115,7 @@
 					$('#rnSo2').text('--');
 					$('#rnSo2').css('color', '#cccccc');
 				}
-				if (no2 != '-' && !isNaN(no2))
+				if (no2 != '-' && no2 >= 0 && !isNaN(no2))
 				{
 					ringSet('#rNo2', AQI2Deg(ino2));
 					$('#rnNo2').text(Math.floor(no2));
@@ -127,7 +128,7 @@
 					$('#rnNo2').text('--');
 					$('#rnNo2').css('color', '#cccccc');
 				}
-				if (co != '-' && !isNaN(co))
+				if (co != '-' && co >= 0 && !isNaN(co))
 				{
 					ringSet('#rCo', AQI2Deg(ico));
 					$('#rnCo').text(Math.floor(co * 10) / 10);
@@ -140,7 +141,7 @@
 					$('#rnCo').text('--');
 					$('#rnCo').css('color', '#cccccc');
 				}
-				if (o3 != '-' && !isNaN(o3))
+				if (o3 != '-' && o3 >= 0 && !isNaN(o3))
 				{
 					ringSet('#rO3', AQI2Deg(io3));
 					$('#rnO3').text(Math.floor(o3));
@@ -153,6 +154,8 @@
 					$('#rnO3').text('--');
 					$('#rnO3').css('color', '#cccccc');
 				}
+				
+				if (aqi > 500) aqi = 500;
 				
 				if (aqi == 0) $('#mcAqi').text('--').css('color', '#cccccc');
 				else $('#mcAqi').text(aqi).css('color', evaColor(aqi));
@@ -219,6 +222,8 @@
 				{
 					$(battery).find('div.o3b .bar').animate({backgroundColor: '#cccccc', height: '0%'}, battDur);
 				}
+				
+				if (aqi > 500) aqi = 500;
 				
 				$(battery).find('span.aqi').text(aqi).css('color', evaColor(aqi));
 			}
@@ -367,12 +372,12 @@
 							$('#staWeather').html('');
 							for (x in response.weather_stations)
 							{
-								$('#staWeather').append('<div class="liEntry"><span class="liName">' + response.weather_stations[x].name + '</span><span class="liHidden liValue">' + response.weather_stations[x].wmo + '</span><span class="liHidden liLat">' + response.weather_stations[x].lat + '</span><span class="liHidden liLon">' + response.weather_stations[x].lon + '</span></div>');
+								$('#staWeather').append('<div class="liEntry"><span class="liName">' + response.weather_stations[x].name + '</span><span class="liHidden liValue">' + response.weather_stations[x].wmo + '</span><span class="liHidden liLat">' + Math.round(response.weather_stations[x].lat * 100) / 100 + '</span><span class="liHidden liLon">' + Math.round(response.weather_stations[x].lon * 100) / 100 + '</span></div>');
 							}
 							$('#staAir').html('');
 							for (x in response.airquality_stations)
 							{
-								$('#staAir').append('<div class="liEntry"><span class="liName">' + response.airquality_stations[x].name + '</span><span class="liHidden liValue">' + response.airquality_stations[x].code + '</span><span class="liHidden liLat">' + response.airquality_stations[x].lat + '</span><span class="liHidden liLon">' + response.airquality_stations[x].lon + '</span></div>');
+								$('#staAir').append('<div class="liEntry"><span class="liName">' + response.airquality_stations[x].name + '</span><span class="liHidden liValue">' + response.airquality_stations[x].code + '</span><span class="liHidden liLat">' + Math.round(response.airquality_stations[x].lat * 100) / 100 + '</span><span class="liHidden liLon">' + Math.round(response.airquality_stations[x].lon * 100) / 100 + '</span></div>');
 							}
 							if (response.airquality_stations.length == 0)
 							{
@@ -576,7 +581,7 @@
 				// Cookie initialization
 				if ($.cookie('city') == undefined)
 				{
-					$.cookie('city', '[{"name":"北京","eng":"BEIJING","w":{"name":"海淀","wmo":"54399","lat":"39.99","lon":"116.60"},"a":{"name":"海淀万柳","id":"1007A","lat":"40.00","lon":"116.60"}},{"name":"杭州","eng":"HANGZHOU","w":{"name":"杭州","wmo":"58457","lat":"30.23","lon":"120.17"},"a":{"name":"朝晖五区","id":"1229A","lat":"30.29","lon":"120.16"}},{"name":"上海","eng":"SHANGHAI","w":{"name":"上海","wmo":"58367","lat":"31.17","lon":"121.43"},"a":{"name":"静安监测站","id":"1147A","lat":"31.23","lon":"121.42"}},{"name":"苏州","eng":"SUZHOU","w":{"name":"苏州","wmo":"58349","lat":"31.27","lon":"120.65"},"a":{"name":"彩香","id":"1162A","lat":"31.30","lon":"120.59"}},{"name":"郑州","eng":"ZHENGZHOU","w":{"name":"郑州","wmo":"57083","lat":"34.72","lon":"113.65"},"a":{"name":"郑纺机","id":"1317A","lat":"34.77","lon":"113.64"}},{"name":"广州","eng":"GUANGZHOU","w":{"name":"广州","wmo":"59287","lat":"23.22","lon":"113.48"},"a":{"name":"市监测站","id":"1352A","lat":"23.13","lon":"113.26"}},{"name":"石家庄","eng":"SHIJIAZHUANG","w":{"name":"石家庄","wmo":"53698","lat":"38.03","lon":"114.42"},"a":{"name":"西北水源","id":"1031A","lat":"38.17","lon":"114.44"}},{"name":"南京","eng":"NANJING","w":{"name":"南京","wmo":"58238","lat":"31.93","lon":"118.9"},"a":{"name":"中华门","id":"1154A","lat":"32.01","lon":"118.78"}}]', {expires: 3650});
+					$.cookie('city', '[{"name":"北京","eng":"BEIJING","w":{"name":"海淀","wmo":"54399","lat":"39.98","lon":"116.28"},"a":{"name":"海淀区万柳","id":"1007A","lat":"39.9934","lon":"116.315"}},{"name":"上海","eng":"SHANGHAI","w":{"name":"上海","wmo":"58367","lat":"31.17","lon":"121.43"},"a":{"name":"静安监测站","id":"1147A","lat":"31.2261","lon":"121.425"}},{"name":"广州","eng":"GUANGZHOU","w":{"name":"广州","wmo":"59287","lat":"23.22","lon":"113.48"},"a":{"name":"市监测站","id":"1352A","lat":"23.1331","lon":"113.26"}}]');
 				}
 				readCityList();
 				
@@ -701,12 +706,108 @@
 				ringInit('#rCo');
 				ringInit('#rO3');
 				
-				// code used for debugging and testing.
+				if (navigator.geolocation)
+				{
+					navigator.geolocation.getCurrentPosition(function(position){
+						$('#geomes').html('<span class="latitude" id="geolat">-</span> <span id="geolatsymbol">N</span> | <span class="longitude" id="geolon">-</span> <span id="geolonsymbol">E</span>');
+						
+						var lat = Math.round(position.coords.latitude * 100) / 100, lon = Math.round(position.coords.longitude * 100) / 100;
+						
+						if (lat < 0)
+						{
+							$('#geolatsymbol').text('S');
+							lat = -lat;
+						}
+						if (lon < 0)
+						{
+							$('#geolonsymbol').text('W');
+							lon = -lon;
+						}
+						
+						$('#geolat').text(lat);
+						$('#geolon').text(lon);
+						
+						$.ajax
+						({
+							url: '/api/weather/nearest/?lat=' + lat + '&lon=' + lon,
+							type: 'GET',
+							dataType: 'json',
+							timeout: 10000,
+							success: function (response)
+							{
+								var res = response.res;
+								if (res.length > 0)
+								{
+									$('#caption h1').text(res[0].city);
+									$('#caption h2').text(res[0].city_en.toUpperCase());
+									
+									$('#mcWeaSta').text(res[0].name);
+									$('#mcWLat').text(res[0].lat);
+									$('#mcWLong').text(res[0].lon);
+									$('#mcWMO').text(res[0].wmo);
+									
+									$('#mcAirSta').text('--');
+									$('#mcALat').text('-');
+									$('#mcALong').text('-');
+									$('#mcAID').text('-');
+									
+									$.ajax
+									({
+										url: '/api/airquality/nearest/?lat=' + lat + '&lon=' + lon,
+										type: 'GET',
+										dataType: 'json',
+										timeout: 10000,
+										success: function (response2)
+										{
+											var res2 = response2.res;
+											
+											if (res2.length > 0)
+											{
+												$('#mcAirSta').text(res2[0].name);
+												$('#mcALat').text(res2[0].lat);
+												$('#mcALong').text(res2[0].lon);
+												$('#mcAID').text(res2[0].code);
+												
+												updateMain();
+											}
+											else
+											{
+												updateMain();
+											}
+										},
+										error: updateMain
+									});
+								}
+								else
+								{
+									updateMain();
+								}
+							},
+							error: updateMain
+						});
+					}, function(error){
+						switch (error.code)
+						{
+							case error.PERMISSION_DENIED:
+					      $('#geomes').text('Request for Geolocation has been denied.');
+					      break;
+					    case error.POSITION_UNAVAILABLE:
+					      $('#geomes').text('Location information is unavaliable');
+					      break;
+					    default:
+					      $('#geomes').text('An error occurred.');
+					      break;
+						}
+						updateMain();
+					});
+				}
+				else
+				{
+					$('#geomes').text('Geolocation not supported by your browser.');
+					updateMain();
+				}
 				
-				updateMain();
 				$('div.clickable').each(function(){updateBattery(this)});
-				
-				// $('#lightbox').fadeIn(lightboxDur);
 			});
 		</script>
 	</head>
@@ -739,7 +840,11 @@
 			</div>
 		</div>
 		<div id="mainContainer">
-			<div id="logo"></div>
+			<div id="logo">
+				<div id="geolocation">
+					<span id="geomes">Loading...</span>
+				</div>
+			</div>
 			<div id="contents">
 				<div id="mainCol"> <!-- 主栏 -->
 					<div id="caption">
@@ -770,7 +875,7 @@
 							<div id="mcWeaLocGrid" class="mBlock">
 								<span class="mBlockCaption">Location</span>
 								<span class="mStationName" id="mcWeaSta">海淀</span> <!-- 放气象站 -->
-								<span class="mStationCoord"><span class="latitude" id="mcWLat">39.99</span> N | <span class="longitude" id="mcWLong">116.60</span> E</span> <!-- 放气象站坐标 -->
+								<span class="mStationCoord"><span class="latitude" id="mcWLat">39.98</span> N | <span class="longitude" id="mcWLong">116.28</span> E</span> <!-- 放气象站坐标 -->
 								<span class="hidden" id="mcWMO">54399</span>
 							</div>
 						</div>
@@ -813,8 +918,8 @@
 							</div>
 							<div id="mcAirLocGrid" class="mBlock">
 								<span class="mBlockCaption">Location</span>
-								<span class="mStationName" id="mcAirSta">海淀万柳</span> <!-- 放空气站 -->
-								<span class="mStationCoord"><span class="latitude" id="mcALat">40.00</span> N | <span class="longitude" id="mcALong">116.60</span> E</span> <!-- 放空气站坐标 -->
+								<span class="mStationName" id="mcAirSta">海淀区万柳</span> <!-- 放空气站 -->
+								<span class="mStationCoord"><span class="latitude" id="mcALat">39.99</span> N | <span class="longitude" id="mcALong">116.31</span> E</span> <!-- 放空气站坐标 -->
 								<span class="hidden" id="mcAID">1007A</span>
 							</div>
 						</div>
@@ -828,8 +933,8 @@
 						<div class="removeCity cBlockSet"></div>
 						<div class="modifyCity cBlockSet"></div>
 						
-						<span class="locWeather hidden"><span class="name">海淀</span><span class="wmo">54399</span><span class="lat">39.99</span><span class="lon">116.60</span></span>
-						<span class="locAir hidden"><span class="name">海淀万柳</span><span class="id">1007A</span><span class="lat">40.00</span><span class="lon">116.60</span></span>
+						<span class="locWeather hidden"><span class="name">海淀</span><span class="wmo">54399</span><span class="lat">39.98</span><span class="lon">116.28</span></span>
+						<span class="locAir hidden"><span class="name">海淀区万柳</span><span class="id">1007A</span><span class="lat">39.9934</span><span class="lon">116.315</span></span>
 						
 						<div><span class="temp">--</span><span class="unit"> °C</span></div>
 						<div><span class="humid">--</span><span class="unit"> %</span></div>
