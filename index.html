@@ -372,12 +372,12 @@
 							$('#staWeather').html('');
 							for (x in response.weather_stations)
 							{
-								$('#staWeather').append('<div class="liEntry"><span class="liName">' + response.weather_stations[x].name + '</span><span class="liHidden liValue">' + response.weather_stations[x].wmo + '</span><span class="liHidden liLat">' + Math.round(response.weather_stations[x].lat * 100) / 100 + '</span><span class="liHidden liLon">' + Math.round(response.weather_stations[x].lon * 100) / 100 + '</span></div>');
+								$('#staWeather').append('<div class="liEntry"><span class="liName">' + response.weather_stations[x].name + '</span><span class="liHidden liValue">' + response.weather_stations[x].wmo + '</span><span class="liHidden liLat">' + response.weather_stations[x].lat + '</span><span class="liHidden liLon">' + response.weather_stations[x].lon + '</span></div>');
 							}
 							$('#staAir').html('');
 							for (x in response.airquality_stations)
 							{
-								$('#staAir').append('<div class="liEntry"><span class="liName">' + response.airquality_stations[x].name + '</span><span class="liHidden liValue">' + response.airquality_stations[x].code + '</span><span class="liHidden liLat">' + Math.round(response.airquality_stations[x].lat * 100) / 100 + '</span><span class="liHidden liLon">' + Math.round(response.airquality_stations[x].lon * 100) / 100 + '</span></div>');
+								$('#staAir').append('<div class="liEntry"><span class="liName">' + response.airquality_stations[x].name + '</span><span class="liHidden liValue">' + response.airquality_stations[x].code + '</span><span class="liHidden liLat">' + response.airquality_stations[x].lat + '</span><span class="liHidden liLon">' + response.airquality_stations[x].lon + '</span></div>');
 							}
 							if (response.airquality_stations.length == 0)
 							{
@@ -549,8 +549,8 @@
 				{
 					w.name = jw.children('span.liName').text();
 					w.wmo = jw.children('span.liValue').text();
-					w.lat = jw.children('span.liLat').text();
-					w.lon = jw.children('span.liLon').text();
+					w.lat = Math.round(jw.children('span.liLat').text() * 100) / 100;
+					w.lon = Math.round(jw.children('span.liLon').text() * 100) / 100;
 				}
 				else
 				{
@@ -562,8 +562,8 @@
 				{
 					a.name = ja.children('span.liName').text();
 					a.id = ja.children('span.liValue').text();
-					a.lat = ja.children('span.liLat').text();
-					a.lon = ja.children('span.liLon').text();
+					a.lat = Math.round(ja.children('span.liLat').text() * 100) / 100;
+					a.lon = Math.round(ja.children('span.liLon').text() * 100) / 100;
 				}
 				else
 				{
@@ -581,7 +581,7 @@
 				// Cookie initialization
 				if ($.cookie('city') == undefined)
 				{
-					$.cookie('city', '[{"name":"北京","eng":"BEIJING","w":{"name":"海淀","wmo":"54399","lat":"39.98","lon":"116.28"},"a":{"name":"海淀区万柳","id":"1007A","lat":"39.9934","lon":"116.315"}},{"name":"上海","eng":"SHANGHAI","w":{"name":"上海","wmo":"58367","lat":"31.17","lon":"121.43"},"a":{"name":"静安监测站","id":"1147A","lat":"31.2261","lon":"121.425"}},{"name":"广州","eng":"GUANGZHOU","w":{"name":"广州","wmo":"59287","lat":"23.22","lon":"113.48"},"a":{"name":"市监测站","id":"1352A","lat":"23.1331","lon":"113.26"}}]');
+					$.cookie('city', '[{"name":"北京","eng":"BEIJING","w":{"name":"海淀","wmo":"54399","lat":"39.98","lon":"116.28"},"a":{"name":"海淀区万柳","id":"1007A","lat":"39.99","lon":"116.32"}},{"name":"上海","eng":"SHANGHAI","w":{"name":"上海","wmo":"58367","lat":"31.17","lon":"121.43"},"a":{"name":"静安监测站","id":"1147A","lat":"31.23","lon":"121.43"}},{"name":"广州","eng":"GUANGZHOU","w":{"name":"广州","wmo":"59287","lat":"23.22","lon":"113.48"},"a":{"name":"市监测站","id":"1352A","lat":"23.13","lon":"113.26"}}]');
 				}
 				readCityList();
 				

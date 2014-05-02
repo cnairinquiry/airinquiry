@@ -41,5 +41,16 @@ div.leftBlock
 	z-index: 30;
 	display: none;
 }
-
+.webkitLMask
+{
+	-webkit-mask-image: url(mask_l_webkit.png) !important;
+}
+.webkitRMask
+{
+	-webkit-mask-image: url(mask_r_webkit.png) !important;
+}
+.webkitWholeMask
+{
+	-webkit-mask-image: url(mask_webkit.png) !important;
+}
 

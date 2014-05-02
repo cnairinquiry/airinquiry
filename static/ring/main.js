@@ -1,7 +1,7 @@
 ﻿function _getColor (ring, deg)
 {
 	if (deg <= $(ring).data('bound1')) return '#00e400';
-	else if (deg <= $(ring).data('bound2')) return '#fcf302';//'#ffff00';
+	else if (deg <= $(ring).data('bound2')) return '#f2db07';//'#ffff00';
 	else if (deg <= $(ring).data('bound3')) return '#ff7e00';
 	else if (deg <= $(ring).data('bound4')) return '#ff0000';
 	else if (deg <= $(ring).data('bound5')) return '#99004c';
@@ -159,7 +159,14 @@ function ringImmeSet (ring, val)
 }
 function ringInit (ring, bound1, bound2, bound3, bound4, bound5)
 {
-	$(ring).html('<svg class="halfLeftRing"><defs><mask id="leftMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="static/ring/mask_l.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#leftMask);"><div class="innerColorRing innerLeftRing"></div></foreignObject></svg><svg class="halfRightRing"><defs><mask id="rightMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="static/ring/mask_r.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#rightMask);"><div class="innerColorRing"></div></foreignObject></svg><svg class="baseRing"><defs><mask id="wholeMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="static/ring/mask.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#wholeMask);"><div class="innerRing"></div></foreignObject></svg><div class="leftBlock"></div>');
+	if (navigator.userAgent.match(/(iPod|iPhone|iPad)/) && navigator.userAgent.match(/AppleWebKit/))
+	{
+		$(ring).html('<svg class="halfLeftRing"><foreignObject width="50px" height="50px"><div class="innerColorRing innerLeftRing webkitLMask"></div></foreignObject></svg><svg class="halfRightRing"><foreignObject width="50px" height="50px"><div class="innerColorRing webkitRMask"></div></foreignObject></svg><svg class="baseRing"><foreignObject width="50px" height="50px"><div class="innerRing webkitWholeMask"></div></foreignObject></svg><div class="leftBlock"></div>');
+	}
+	else
+	{
+		$(ring).html('<svg class="halfLeftRing"><defs><mask id="leftMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="static/ring/mask_l.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#leftMask);"><div class="innerColorRing innerLeftRing"></div></foreignObject></svg><svg class="halfRightRing"><defs><mask id="rightMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="static/ring/mask_r.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#rightMask);"><div class="innerColorRing"></div></foreignObject></svg><svg class="baseRing"><defs><mask id="wholeMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse"><image width="50px" height="50px" xlink:href="static/ring/mask.png"></image></mask></defs><foreignObject width="50px" height="50px" style="mask: url(#wholeMask);"><div class="innerRing"></div></foreignObject></svg><div class="leftBlock"></div>');
+	}
 	$(ring).data('bound1', arguments[1] ? arguments[1] : 60);
 	$(ring).data('bound2', arguments[2] ? arguments[2] : 120);
 	$(ring).data('bound3', arguments[3] ? arguments[3] : 180);
