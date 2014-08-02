@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -716,16 +716,23 @@
 						if (lat < 0)
 						{
 							$('#geolatsymbol').text('S');
-							lat = -lat;
+							$('#geolat').text(-lat);
+						}
+						else
+						{
+							$('#geolatsymbol').text('N');
+							$('#geolat').text(lat);
 						}
 						if (lon < 0)
 						{
 							$('#geolonsymbol').text('W');
-							lon = -lon;
+							$('#geolon').text(-lon);
 						}
-						
-						$('#geolat').text(lat);
-						$('#geolon').text(lon);
+						else
+						{
+							$('#geolonsymbol').text('E');
+							$('#geolon').text(lon);
+						}
 						
 						$.ajax
 						({
@@ -789,17 +796,20 @@
 						switch (error.code)
 						{
 							case error.PERMISSION_DENIED:
-					      $('#geomes').text('Request for Geolocation has been denied.');
-					      break;
-					    case error.POSITION_UNAVAILABLE:
-					      $('#geomes').text('Location information is unavaliable');
-					      break;
-					    default:
-					      $('#geomes').text('An error occurred.');
-					      break;
+								$('#geomes').text('Request for Geolocation has been denied.');
+								break;
+							case error.POSITION_UNAVAILABLE:
+								$('#geomes').text('Location information is unavaliable');
+								break;
+							case error.TIMEOUT:
+								$('#geomes').text('Request timed out');
+								break;
+							default:
+								$('#geomes').text('An error occurred.');
+								break;
 						}
 						updateMain();
-					});
+					}, {timeout: 20000});
 				}
 				else
 				{
